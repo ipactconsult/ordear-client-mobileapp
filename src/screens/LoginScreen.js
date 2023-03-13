@@ -1,6 +1,6 @@
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Input } from 'react-native-elements';
-import { MaterialCommunityIcons, Alert, View,Text,Image, StyleSheet ,Button, StatusBar, TouchableOpacity, ScrollView} from 'react-native';
+import { ToastAndroid, Alert, View,Text,Image, StyleSheet ,Button, StatusBar, TouchableOpacity, ScrollView} from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import google from '../../assets/images/google.png'
 import fb from '../../assets/images/fb.png'
@@ -9,6 +9,8 @@ import axios from 'axios';
 import translate from '../../assets/images/translate.png'
 import  {useForm, Controller} from 'react-hook-form';
 import { set } from 'react-native-reanimated';
+
+import ipAdress from '../constants/cte'
 
 const EMAIL_REGEX = /^[a-zA-Z0-9. !#$%&*+/?^_{1}~]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)+$/
 
@@ -19,16 +21,17 @@ const LoginScreen = ({navigation}) => {
 
   
   const {control, handleSubmit,getValues, formState: {errors}} = useForm();
-    console.log(errors);
+    //console.log(errors);
 
  
  const onSignInPressed = (email, password) => {
    
  // console
     console.log(email, password);
-      const configuration = {
+      
+     const configuration = {
         method: "post",
-        url: "http://192.168.1.11:5000/api/login",
+        url: ip.ipAdress+"/login",
         data: {
         email,
         password
@@ -37,9 +40,12 @@ const LoginScreen = ({navigation}) => {
 
       axios(configuration)
       .then((result) => {console.log("user connecté"); 
-        navigation.navigate('Profile')  
+        navigation.navigate('profile')
       })
-      .catch((error) => {console.log(error.response.data);console.log("user non connecté");})
+      .catch((error) => {console.log(error.response.data);
+        console.log("user non connecté");
+        ToastAndroid.show('Login failed ', ToastAndroid.LONG);
+      })
 
 
 }
@@ -60,15 +66,10 @@ const LoginScreen = ({navigation}) => {
          <Image source={translate} style = {styles.translate}/>  
         </View>
 
-        <View style = {{flexDirection:'row'}}>
-         <Text style= {styles.text}> Make your day endless of delicious !</Text>  
-         {/*<Image source={tasty} style = {{height: 35, width: 35, marginLeft: 10}} />*/}
-        </View>        
-
-        <View style = {{flexDirection:'column', paddingTop: 20 }}
-              onSubmit={() => {onSignInPressed(onSubmit)}}
-         >
         
+        <Text style= {styles.text}> Make your day endless of delicious !</Text>        
+
+        <View style = {{flexDirection:'column', paddingTop: 20 }}>        
          <View style={{flexDirection:'row'}}>
    
             <Controller

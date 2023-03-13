@@ -1,5 +1,4 @@
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { Input } from 'react-native-elements';
 import { ToastAndroid, Alert, View,Text,Image, StyleSheet ,Button, StatusBar, TouchableOpacity, ScrollView} from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import google from '../../assets/images/google.png';
@@ -7,21 +6,59 @@ import fb from '../../assets/images/fb.png';
 import React, {useState} from 'react';
 import Checkbox from "expo-checkbox";
 import axios from 'axios';
-import { sub } from 'react-native-reanimated';
+import ipAdress from '../constants/cte'
+import  {useForm, Controller} from 'react-hook-form';
+
+const EMAIL_REGEX = /^[a-zA-Z0-9. !#$%&*+/?^_{1}~]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)+$/
+const NAME_REGEX =  /^[a-zA-Z]+$/;
 
 const InscrireScreen = ({navigation}) => {
 
-  const [username, setUsername]= useState('');
-  const [phone, setPhone]= useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [passwordVerify, setPasswordVerify] = useState(''); 
-  const [inscrire, setInscrire] = useState(false);
+  var firstName;
+  var lastName;
+  var email;
+  var password;
+  var passwordVerify;
+
+  const {control, handleSubmit,getValues, watch, formState: {errors}} = useForm();
+ // console.log(errors);
+
+  const pwd = watch('password')
 
   const [agree, setAgree] = useState(false);
 
+  const onSignInPressed = (firstName, lastName, email, password, passwordVerify) => {
+   
+    console.log(password, passwordVerify);
+    console.log(firstName, lastName);
+    console.log(email);
+    //navigation.navigate("Login")  
+
+   
+      const configuration = {
+        method: "post",
+        url: ip.ipAdress+"/registerwithcode",
+        data: {
+          firstName,
+          lastName,
+          email,
+          password,
+          passwordVerify,
+        },
+      };
+  
+      axios(configuration)
+       .then((result) => {
+         console.log("Email sent");
+         //confirmEmail(email, password);
+         navigation.navigate('verifSignUpCode')
+        })
+       .catch((error) => {console.log("Email not sent"), ToastAndroid.show('SignUp failed ', ToastAndroid.LONG);});
+  
+ }
+
   /* ------------------------ liaison avec le back --------------------------------*/
-  const handleSubmit = (e) => {
+ {/*} const handleSubmit = (e) => {
     // prevent the form from refreshing the whole page
     e.preventDefault();
     // make a popup alert showing the "submitted" text
@@ -47,195 +84,265 @@ const InscrireScreen = ({navigation}) => {
        navigation.navigate('signUpConfirmation')
       })
      .catch((error) => {console.log("user not registered !")});
-  }
+  } */}
  /* ------------------------ FIN liaison avec le back --------------------------------*/
   return(
-   <ScrollView>
+   <ScrollView style ={{backgroundColor:'#fff'}}>
      <View style = {styles.container}> 
-       <StatusBar 
-         barStyle="dark-content"
-         hidden= {false}
-         backgroundColor ="#fff" 
-       />
+          <StatusBar 
+            barStyle="dark-content"
+            hidden= {false}
+            backgroundColor ="#fff" 
+          />
 
-       {/* SignUp form Section*/}
-      <View style = {styles.loginContainer}>        
+       {/* ------------------ SignUp form Section ---------------------*/}
+          <View style = {styles.loginContainer}>        
 
-        <View style={{flexDirection: 'row', justifyContent:'flex-start'}}>  
-         <Text style={{fontSize: 30, color: "#333", marginTop:10}}> SignUp</Text>        
-        </View>
+            <View style={{flexDirection: 'row', justifyContent:'flex-start'}}>  
+               <Text style={{fontSize: 30, color: "#333", marginTop:10}}> SignUp</Text>        
+            </View>
+            <Text style= {styles.text}> Delicious Food, Great Day !</Text>  
+            
 
-         <Text style= {styles.text}> Delicious Food, Great Day !</Text>  
-         
+            <View style = {{flexDirection:'column', paddingTop: 20 }}
+                   onSubmit={() => {onSignInPressed(onSubmit)}}
+                  >
 
-        <View style = {{flexDirection:'column', paddingTop: 20 }}
-              onSubmit={(e) => {handleSubmit(onSubmit)(e)}}
-              >
-
-       <View style={{flexDirection:'row'}}>
-        
-       <View style = {styles.formContainer2}>
-           <Icon name='user-o' size={22} color="#818181" />
-           <TextInput 
-             autoCapitalize= "none"
-             autoCorrect={false}
-             style = {styles.input} 
-             placeholder= "Name"
-             placeholderTextColor="#818181"
-             name={username}
-             value={username}
-             onChangeText = {setUsername}
-             
-           />
-         </View>
-
-         <View style = {styles.formContainer3}>
-
-           <Icon name='phone' size={22} color="#818181"/>
-           <TextInput 
-             keyboardType='phone-pad'
-             autoCapitalize= "none"
-             autoCorrect={false}
-             style = {styles.input} 
-             placeholder= "Phone"
-             placeholderTextColor="#818181"
-             name={phone}
-             value={phone}
-             onChangeText = {setPhone}
-             
-           />
-         </View>
-       </View>
-        
-
-         <View style = {styles.formContainer}>
-           <Icon name='envelope-o' size={22} color="#818181"/>
-           <TextInput 
-             keyboardType='email-address'
-             autoCapitalize= "none"
-             autoCorrect={false}
-             style = {styles.input} 
-             placeholder= "Email"
-             placeholderTextColor="#818181"
-             name={email}
-             value={email}
-             onChangeText = {setEmail}
-             
-           />
-         </View>
-         <View style = {styles.formContainer}>
-          <Icon name='lock' size={22} color="#818181"/>
-           <TextInput 
-            autoCapitalize= "none"
-            autoCorrect={false}
-             secureTextEntry
-             style = {styles.input} 
-             placeholder= "Password"
-             placeholderTextColor="#818181"
-             name={password}
-             value={password}
-             onChangeText = {setPassword}
-           />
-         </View>
-
-         <View style = {styles.formContainer}>
-          <Icon name='check-circle-o' size={22} color="#818181"/>
-           <TextInput 
-            autoCapitalize= "none"
-            autoCorrect={false}
-             secureTextEntry
-             style = {styles.input} 
-             placeholder= "Confirm password"
-             placeholderTextColor="#818181"
-             name={passwordVerify}
-             value={passwordVerify}
-             onChangeText = {setPasswordVerify}
-           />
-         </View>    
-
-        <View style ={{flexDirection: 'column'}}>
-            <View style={styles.wrapper} >
-                <Checkbox style= {styles.check}
-                    value= {agree}
-                    onValueChange={() => setAgree(!agree)}
-                    color= {agree? 'red': undefined}     
-              />
-              <Text>I accept the </Text>
-
-              <TouchableOpacity onPress={()=> termsAlert()}> 
-                <Text style= {{
-                  marginLeft:1,
-                  color:'red',
-                  textDecorationLine: 'underline'
-              }}>terms</Text>
-            </TouchableOpacity>
-
-            <Text>, </Text> 
-
-            <TouchableOpacity onPress={() => privacyAlert()}> 
-                <Text style= {{
-                  marginLeft:1,
-                  color:'red',
-                  textDecorationLine: 'underline'
-              }}>privacy</Text>
-            </TouchableOpacity>
-
-            <Text> and </Text>        
-            <TouchableOpacity onPress={() => cookiesAlert()}> 
-                <Text style= {{
-                  marginLeft:1,
-                  color:'red',
-                  textDecorationLine: 'underline'
-              }}>cookies policy</Text>
-            </TouchableOpacity>  
-       
-          </View>
-       
-        </View>
-    {/*inscrire ? <Text> Registered Successfully</Text> :<Text> You are not registered</Text>*/ }
-    
-    {/*onPress={() => navigation.navigate('Account')}*/}
-         
-         <TouchableOpacity style={styles.press} 
-                              disabled = {agree? false : true}
-           onPress= {(e) => handleSubmit(e)} >
-            <Text style={styles.pressTxt} >
-              Sign Up</Text>              
-         </TouchableOpacity>
-
-        </View>
-
-       {/* Social login Section*/}
-       <View style = {styles.socialContainer}> 
-        <Text style= {styles.Or}>Or </Text> 
-
-        <View style = {styles.apps}>
-          <TouchableOpacity  style = {styles.touchable}>
-            <Image source = {google} style= {{height: 30, width: 30,marginLeft:10,}} />
-
-            <Text style = {styles.txtTouchable}> Sign Up with Google</Text>
-          </TouchableOpacity>
-
-         <TouchableOpacity  style = {styles.touchable}>
-            <Image source = {fb} style= {{height: 30, width: 30,marginLeft:10,}} />
-
-            <Text style = {styles.txtTouchable}>  Sign Up with Facebook</Text>
-          </TouchableOpacity>
-        </View>       
-
-      
-       <View style = {styles.signup}>
-          <Text style={styles.textSignUp}> You have an account ?</Text>
-          <TouchableOpacity
-           onPress={() => navigation.navigate('Login')}> 
-           <Text style= {{fontSize: 16, color: "#333",textDecorationLine: 'underline', }}> SignIn !</Text>
-          </TouchableOpacity>
           
-        </View>
-        
-       </View>
+              <View style ={{flexDirection: 'row', width: '50%'}}>
+                
+                
+                    <Controller
+                      control={control}
+                      name="firstname"
+                      rules={{required: 'First name is required', minLength:{value: 3, message:'First name should be minimum 3 characters'},
+                      pattern:{value: NAME_REGEX, message:'First name invalid'}
+                    }}
+                      render={ ({field: {value, onChange , onBlur}, fieldState:{error}}) => 
+                      <>
+                          <View style={{flexDirection:"column"}}>
+                            <View style = {[styles.formContainer,  {borderColor: error? 'red': '#e8e8e8'}]}>
+                              <Icon name='user-o' size={22} color="#818181"/>
+                              <TextInput           
+                                style = {[styles.input]} 
+                                placeholder= "First name"
+                                placeholderTextColor="#818181"
+                                //name={email}
+                                value={value}
+                                onChangeText = {onChange}
+                                onBlur={onBlur}
+                            /> 
+                            </View>
+                            {error && (<Text style={{color: 'red', alignSelf:'stretch', fontSize: 14.5}}>{error.message || 'Error'}</Text>)}
+                          </View>               
+                     </>
+                   }
+                  
+                   />     
+               
 
-      </View>
+                    <Controller
+                      control={control}
+                      name="lastname"
+                      rules={{required: 'Last name is required', minLength:{value: 3, message:'Last name should be minimum 3 characters'},
+                      pattern:{value: NAME_REGEX, message:'Last name invalid'}
+                    }}
+                      render={ ({field: {value, onChange , onBlur}, fieldState:{error}}) => 
+                      <>
+                          <View style={{flexDirection:"column"}}>
+                            <View style = {[styles.formContainer,  {borderColor: error? 'red': '#e8e8e8'}]}>
+                              <Icon name='user-o' size={22} color="#818181"/>
+                              <TextInput         
+                                style = {[styles.input]} 
+                                placeholder= "Last name"
+                                placeholderTextColor="#818181"
+                                value={value}
+                                onChangeText = {onChange}
+                                onBlur={onBlur}
+                            /> 
+                            </View>
+                            {error && (<Text style={{color: 'red', alignSelf:'stretch', fontSize: 14.5}}>{error.message || 'Error'}</Text>)}
+                          </View>               
+                     </>
+                   }
+                  
+                   />     
+               
+                  
+            </View>
+            
+
+                  <Controller
+                  control={control}
+                  name="email"
+                  rules={{required: 'Email is required', pattern:{value: EMAIL_REGEX, message:'Email invalid'}}}
+                  render={ ({field: {value, onChange , onBlur}, fieldState:{error}}) => 
+                  <>
+                      <View style={{flexDirection:"column"}}>
+                        <View style = {[styles.formContainer,  {borderColor: error? 'red': '#e8e8e8'}]}>
+                          <Icon name='envelope' size={22} color="#818181"/>
+                          <TextInput 
+                            autoCapitalize='none'           
+                            style = {[styles.input]} 
+                            placeholder= "Email"
+                            placeholderTextColor="#818181"
+                            //name={email}
+                            value={value}
+                            onChangeText = {onChange}
+                            onBlur={onBlur}
+                        /> 
+                        </View>
+                        {error && (<Text style={{color: 'red', alignSelf:'stretch', fontSize: 14.5}}>{error.message || 'Error'}</Text>)}
+                      </View>               
+                  </>
+                  }
+                  
+                /> 
+              
+             
+                  <Controller
+                  control={control}
+                  name="password"
+                  rules={{required: 'Password is required', minLength: {value:3 , message: 'Password should be minimum 8 characters'}}}
+                  render={ ({field: {value, onChange, onBlur}, fieldState:{error}}) => 
+                  <>
+                      <View style={{flexDirection:"column"}}>
+                        <View style = {[styles.formContainer,  {borderColor: error? 'red': '#e8e8e8'}]}>
+                          <Icon name='lock' size={22} color="#818181"/>
+                          <TextInput 
+                            secureTextEntry
+                            autoCapitalize='none'           
+                            style = {[styles.input]} 
+                            placeholder= "Password"
+                            placeholderTextColor="#818181"
+                            //name={email}
+                            value={value}
+                            onChangeText = {onChange}
+                            onBlur={onBlur}
+                        /> 
+                        </View>
+                        {error && (<Text style={{color: 'red', alignSelf:'stretch', fontSize: 14.5}}>{error.message || 'Error'}</Text>)}
+                      </View>               
+                  </>
+                  }
+                  
+                />
+
+                    <Controller
+                            control={control}
+                            name="passwordVerify"
+                            rules={{required: 'Confirm your password',validate: value => value == pwd || 'Password do not match'}}
+                            render={ ({field: {value, onChange , onBlur}, fieldState:{error}}) => 
+                              <>
+                                  <View style={{flexDirection:"column"}}>
+                                    <View style = {[styles.formContainer,  {borderColor: error? 'red': '#e8e8e8'}]}>
+                                      <Icon name='check-circle-o' size={22} color="#818181"/>
+                                      <TextInput 
+                                      secureTextEntry
+                                        autoCapitalize='none'           
+                                        style = {[styles.input]} 
+                                        placeholder= "Confirm password"
+                                        placeholderTextColor="#818181"
+                                        //name={email}
+                                        value={value}
+                                        onChangeText = {onChange}
+                                        onBlur={onBlur}
+                                    /> 
+                                    </View>
+                                    {error && (<Text style={{color: 'red', alignSelf:'stretch', fontSize: 14.5}}>{error.message || 'Error'}</Text>)}
+                                  </View>               
+                              </>
+                            }                        
+                          /> 
+             
+
+              <View style ={{flexDirection: 'column'}}>
+                  <View style={styles.wrapper} >
+                      <Checkbox style= {styles.check}
+                          value= {agree}
+                          onValueChange={() => setAgree(!agree)}
+                          color= {agree? 'red': undefined}     
+                    />
+                    <Text>I accept the </Text>
+
+                    <TouchableOpacity onPress={()=> termsAlert()}> 
+                      <Text style= {{
+                        marginLeft:1,
+                        color:'red',
+                        textDecorationLine: 'underline'
+                    }}>terms</Text>
+                  </TouchableOpacity>
+
+                  <Text>, </Text> 
+
+                  <TouchableOpacity onPress={() => privacyAlert()}> 
+                      <Text style= {{
+                        marginLeft:1,
+                        color:'red',
+                        textDecorationLine: 'underline'
+                    }}>privacy</Text>
+                  </TouchableOpacity>
+
+                  <Text> and </Text>        
+                  <TouchableOpacity onPress={() => cookiesAlert()}> 
+                      <Text style= {{
+                        marginLeft:1,
+                        color:'red',
+                        textDecorationLine: 'underline'
+                    }}>cookies policy</Text>
+                  </TouchableOpacity>  
+            
+                </View>
+            
+              </View>
+        {/*inscrire ? <Text> Registered Successfully</Text> :<Text> You are not registered</Text>*/ }
+        
+        {/*onPress={() => navigation.navigate('Account')}*/}
+            
+            <TouchableOpacity style={styles.press} disabled = {agree? false : true}
+               onPress={ handleSubmit(onSignInPressed
+                                       (firstName = getValues("firstname"),
+                                        lastName=getValues("lastname"),
+                                        email = getValues("email"),
+                                        password = getValues("password"),
+                                        passwordVerify = getValues("passwordVerify")))
+              } >
+                <Text style={styles.pressTxt} > Sign Up</Text>              
+            </TouchableOpacity>
+
+            </View>
+
+          {/* Social login Section*/}
+          <View style = {styles.socialContainer}> 
+            <Text style= {styles.Or}>Or </Text> 
+
+            <View style = {styles.apps}>
+              <TouchableOpacity  style = {styles.touchable}>
+                <Image source = {google} style= {{height: 30, width: 30,marginLeft:10,}} />
+
+                <Text style = {styles.txtTouchable}> Sign Up with Google</Text>
+              </TouchableOpacity>
+
+            <TouchableOpacity  style = {styles.touchable}>
+                <Image source = {fb} style= {{height: 30, width: 30,marginLeft:10,}} />
+
+                <Text style = {styles.txtTouchable}>  Sign Up with Facebook</Text>
+              </TouchableOpacity>
+            </View>       
+
+          
+          <View style = {styles.signup}>
+              <Text style={styles.textSignUp}> You have an account ?</Text>
+              <TouchableOpacity
+                onPress={() => navigation.navigate('Login')}> 
+              <Text style= {{fontSize: 16, color: "#333",textDecorationLine: 'underline', }}> SignIn !</Text>
+              </TouchableOpacity>
+              
+          </View>
+            
+          </View>
+
+          </View>
   </View>
    </ScrollView>
   )
@@ -285,7 +392,7 @@ const styles = StyleSheet.create({
    flex:2,
    flexDirection: 'column',
    backgroundColor:"#fff",
-   //paddingTop: 10,
+   paddingTop: -20,
    paddingHorizontal:'5%',
    width:"100%"
   },
@@ -313,7 +420,8 @@ const styles = StyleSheet.create({
     height: 60,
     paddingLeft: 20,
     marginTop:5,
-    marginBottom: 10
+    marginBottom: 10,
+    borderWidth: 1,
   },
 
   formContainer2:{
@@ -356,7 +464,7 @@ const styles = StyleSheet.create({
   width:'95%',
   backgroundColor:"#FF1717",
   height:50,
-  marginBottom:20,
+  marginBottom: 10,
   borderRadius:10,
   marginTop: 10,
   
@@ -376,6 +484,7 @@ Or: {
   color:"#818181",
   fontSize: 20,
   fontWeight:'bold',
+  marginTop: 0
 },
 
 apps:{
@@ -407,10 +516,11 @@ txtTouchable: {
 signup: {
    flex: 1,
    flexDirection: 'row',
-   justifyContent: 'center',
+   justifyContent: 'flex-end',
    alignItems:'flex-end',
    backgroundColor:'#fff',
-   marginTop:40
+   marginRight:60,
+   marginTop:-10
    
 },
 textSignUp: {
@@ -419,7 +529,7 @@ textSignUp: {
 },
 wrapper: {
   flexDirection: 'row',
-  paddingTop: 30,
+  paddingTop: 15,
   marginLeft: 10,
   marginBottom:10,
 },

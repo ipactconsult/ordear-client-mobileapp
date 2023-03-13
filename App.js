@@ -2,49 +2,48 @@ import React from "react";
 import { createAppContainer, createSwitchNavigator} from 'react-navigation';
 import { createStackNavigator } from "react-navigation-stack";
 import { createMaterialBottomTabNavigator } from "react-navigation-material-bottom-tabs";
-import MenuScreen from "./src/screens/MenuScreen";
 import { Provider as AuthProvider } from "./src/context/AuthContext";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import MenuScreen from "./src/screens/MenuScreen";
+
 import SplashScreen from "./src/screens/SplashScreen";
 import LoginScreen from "./src/screens/LoginScreen";
 import InscrireScreen from "./src/screens/InscrireScreen";
 import ForgotPasswordScreen from "./src/screens/ForgotPasswordScreen";
-import CodeConfirmScreen from "./src/screens/CodeConfirmScreen";
 import ResetPasswordScreen from "./src/screens/ResetPasswordScreen";
-import { Switch, Route } from "react-router-dom";
-import Profile from "./src/screens/Profile";
-import codeSignUpConfirmation from "./src/screens/codeSignUpConfirmation";
-import bottomTabScreen from "./src/screens/bottomTabScreen";
+import Profile from "./src/screens/ProfileScreen";
 import editPorfileScreen from "./src/screens/editProfileScreen";
-import Update_Profile from "./src/screens/Update_Profile";
+import verifPassCode from "./src/screens/verifPassCode";
+import verifSignupCode from "./src/screens/verifSignupCode";
+import EditPasswordScreen from "./src/screens/editPassword";
+import EditPhoneScreen from "./src/screens/editPhone";
 
 const switchNavigator = createSwitchNavigator({
-
-  loginFlow:  createStackNavigator ({
-   
-    ResetPasswordScreen: ResetPasswordScreen,
-    //Splash: SplashScreen,
+  loginFlow:  createStackNavigator ({  
+  
+    //draw : CustomDrawer,
+   // mainLayout: MainLayout,
+   //Custom : CustomDrawer,
+    Splash: SplashScreen,
     Login : LoginScreen,
-    Profile: Profile,
-    edit: editPorfileScreen,
-    //updateProfile : Update_Profile,
     Inscrire: InscrireScreen,
-    signUpConfirmation: codeSignUpConfirmation,   
+    verifSignUpCode : verifSignupCode,
+    profile: Profile,
+    edit : editPorfileScreen, 
+    editPassword: EditPasswordScreen, 
+    editPhone: EditPhoneScreen,
+   // bottom: bottomTabScreen,
     ForgotPassword: ForgotPasswordScreen,
-    CodeConfirmScreen: CodeConfirmScreen,
+    verifPassCodeScreen: verifPassCode,
     ResetPasswordScreen: ResetPasswordScreen,
   }),
 
   mainFlow: createMaterialBottomTabNavigator({
-   /* DishListFlow: createStackNavigator({
-     
-      //Menu : MenuScreen,
-     //DishList : DishListScreen,
+    DishListFlow: createStackNavigator({
+    // DishList : DishListScreen,
      //DishDetail: DishDetailScreen,
-    }),*/
+     Menu : MenuScreen,
+    }),
     Menu : MenuScreen,
-   // Profile: Profile,
-    //Account: AccountScreen,
   }),
    
 });
@@ -52,7 +51,7 @@ const switchNavigator = createSwitchNavigator({
 const App =  createAppContainer(switchNavigator);
 
 export default () => {
- return( 
+ return(
   <AuthProvider>
     <App /> 
   </AuthProvider>

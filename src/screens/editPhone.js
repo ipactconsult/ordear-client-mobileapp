@@ -1,16 +1,13 @@
 import React, { useState } from "react";
-import { Input } from 'react-native-elements';
 import { ScrollView, View,Text,Image, StyleSheet ,Button, StatusBar, TouchableOpacity, TextInput} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import image from '../../assets/images/reset.png'
 import  {useForm, Controller} from 'react-hook-form';
 import axios from 'axios';
 import ipAdress from '../constants/cte'
 
-const ResetPasswordScreen = ({navigation}) => {
+const EditPhoneScreen = ({navigation}) => {
 
-  const [password, setPassword]= useState('');
-  const [confirmPassword, setConfirmPassword]= useState('');
+  const [phone, setPhone]= useState('');
 
   /*------------------------- liaison avec back ------------------------------------ */
     const handleSubmit = (e) => {
@@ -21,19 +18,22 @@ const ResetPasswordScreen = ({navigation}) => {
       
       
       const configuration = {
-      method: "put",
-      url: ip.ipAdress+"/modifierPass",
+      method: "PUT",
+      url: ip.ipAdress+"/editPhone",
       data: {
-        password,
+        phone,
       },
       };
 
       axios(configuration)
-      .then((result) => {console.log("Password changed");           
-        navigation.navigate('Login')})
-      .catch((error) => {console.log("Password has not changed"); }) 
+      .then((result) => {console.log("Phone changed");           
+        navigation.navigate('profile')})
+      .catch((error) => {console.log("Phone has not changed"); }) 
       
     }
+
+    
+    
 /*------------------------------------------------------------------------------*/
 
 
@@ -53,54 +53,38 @@ const ResetPasswordScreen = ({navigation}) => {
 
             {/* ----------------------- Forgot Password Data ----------------------------- */}
          
-          <Text style = {{fontWeight: '500', fontSize: 25, marginLeft :15, marginTop: 15}}> Create your new password !</Text>            
-          <Text style = {styles.txt}> Enter your new password</Text>
+          <Text style = {{fontWeight: '500', fontSize: 25, marginLeft :15, marginTop: 15}}> Edit your phone number!</Text>            
+          <Text style = {styles.txt}> Enter your phone number</Text>
           <View style = {styles.formContainer}>
-            <Icon name='lock' size={22} color="#818181"/>
+            <Icon name='phone' size={22} color="#818181"/>
             <TextInput 
             secureTextEntry
               autoCapitalize='none'
               style = {styles.input} 
-              placeholder= "Your new password"
+              placeholder= "Phone number"
               placeholderTextColor="#818181"
-              name={password}
-              value={password}
-              onChangeText = {setPassword}
+              name={phone}
+              value={phone}
+              onChangeText = {setPhone}
             />
                         
            </View>
 
-           <View style = {styles.formContainer}>
-            <Icon name='check-circle-o' size={22} color="#818181"/>
-            <TextInput 
-            secureTextEntry
-              autoCapitalize='none'
-              style = {styles.input} 
-              placeholder= "Confirm your password"
-              placeholderTextColor="#818181"
-              name={confirmPassword}
-              value={confirmPassword}
-              onChangeText = {setConfirmPassword}
-            />
-                        
-           </View>
+         
 
            <View style = {{ flex: 1, justifyContent:'flex-end', flexDirection:'column'}}>
               <View style = {{flexDirection: 'row', justifyContent:'space-around'}}>
 
-                  <TouchableOpacity style={styles.touchable} onPress={() => navigation.navigate('Login')}> 
-                    <Text style= {{fontSize: 14, color: "#818181" , fontWeight: 'bold', marginTop: 15, marginLeft:10}}>Back to sign In</Text>
+                  <TouchableOpacity style={styles.touchable} onPress={() => navigation.navigate('profile')}> 
+                    <Text style= {{fontSize: 14, color: "#818181" , fontWeight: 'bold', marginTop: 15, marginLeft:10}}>Back to profile</Text>
                   </TouchableOpacity>
 
-                  <TouchableOpacity style={styles.send} onPress={(e) => handleSubmit(e)}  >
+                  <TouchableOpacity style={styles.send} onPress={(e) => handleSubmit(e)} disabled  = {phone? false : true }   >
                        <Text style={styles.sendTxt} >Send</Text>
                   </TouchableOpacity>
               </View>
            </View>
             
-                
-          
-
              
           </View>
                  
@@ -109,7 +93,7 @@ const ResetPasswordScreen = ({navigation}) => {
 )
 };
 
-ResetPasswordScreen.navigationOptions = () => {
+EditPhoneScreen.navigationOptions = () => {
     return {
       headerShown: null,    
     };
@@ -177,4 +161,4 @@ ResetPasswordScreen.navigationOptions = () => {
      }
   });
   
-export default ResetPasswordScreen;
+export default EditPhoneScreen;

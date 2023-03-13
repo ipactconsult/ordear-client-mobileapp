@@ -1,49 +1,75 @@
-import React , {useState} from "react"
-import {TextInput,ScrollView, StyleSheet, Text, View,StatusBar,Image,TouchableOpacity, } from "react-native"
+import React , {useState, useEffect} from "react"
+import {ToastAndroid, TextInput,ScrollView, StyleSheet, Text, View,StatusBar,Image,TouchableOpacity, } from "react-native"
 import { Input } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome'
+import axios from 'axios';
+import ipAdress from '../constants/cte'
 
 const editPorfileScreen  = ({navigation}) => {
 
     const [avatar, setAvatar ]= useState('');
-    const [username, setUsername ]= useState('');
+    const [firstName, setFisrtName ]= useState('');
+    const [lastName, setLastName ]= useState('');
     const [phone, setPhone]= useState('');
-    const [email, setEmail ]= useState('');
     const [adresse, setAdresse ]= useState('');
-    const [password, setPassword]= useState('')
-    const [confirmPassword, setConfirmPassword]= useState('')
-    const [image, setImage] = useState(''); 
-    const [address, setAdress] = useState(''); 
-    const [role, setRole ]= useState(''); 
+    const [genre, setGenre] = useState(''); 
+    const [birthday, setBirthday ]= useState(''); 
+
+    const  [client , setUser ]=useState({});
+
+
+    /*------------------------- liaison avec back : GET------------------------------------ */
+    useEffect(()=>{   
+      
+           axios.get(ip.ipAdress+'/viewProfile').then((res)=>{
+              // console.log(res)
+               setUser(res.data[0])
+           })
+
+   },[client])
+    /*------------------------------------------------------------------------------*/
+
+    /* --------------------------Edit profile ---------------------------------------------- */
+    const handleSubmit = (e) => {
+
+            e.preventDefault();            
+            
+            const configuration = {
+            method: "PUT",
+            url: ip.ipAdress+"/editProfile",
+            data: {
+                firstName: firstName || client.firstName,
+                lastName: lastName || client.lastName,
+                adresse: adresse || client.adresse, 
+                birthday: birthday || client.birthday,
+               //genre,           
+                
+            },
+            };
+    
+            axios(configuration)
+            .then((result) => {console.log("User data changed");           
+            navigation.navigate('profile')})
+            .catch((error) => {
+                console.log("User data has not changed");
+                ToastAndroid.show('Profile not changed ', ToastAndroid.LONG);
+            }) // 
+            
+      }
 
     return (
 
-        <View>
+        <View style = {styles.container} onSubmit={(e) => {handleSubmit(onSubmit)(e)}}>
             <StatusBar 
                 barStyle="dark-content"
                 hidden= {false}
                 backgroundColor ="#fff" 
             /> 
-            <View style ={{ height: 50, backgroundColor: '#fff', flexDirection:'row', justifyContent:'space-around', shadowOpacity:100,
-                              elevation:15}}>
-
-                <TouchableOpacity style ={styles.txt} onPress ={() => navigation.navigate('Profile')}>
-                     <Text> cancel </Text>
-                </TouchableOpacity>             
-                
-                
-                <Text style ={styles.txt}> Edit profile </Text> 
-
-                <TouchableOpacity style ={styles.txt}>
-                     <Text> Save </Text>
-                </TouchableOpacity>   
-            </View>
-
-           <ScrollView>
+          
            <View style ={{ flexDirection:'column', justifyContent:'center'}}>
                 <View style={{alignItems:'center', borderTopLeftRadius: 200, }}>
                         <Image source={require('../../assets/images/woman.png')} 
-                            style={{width:150, height:150, borderRadius:100, marginTop:30 }} >
+                            style={{width:110, height:110, borderRadius:100, marginTop:50 }} >
                         </Image>                       
                 </View>
 
@@ -51,7 +77,7 @@ const editPorfileScreen  = ({navigation}) => {
 
                 <View style={{flexDirection:'column', justifyContent:'center', width: '80%', alignSelf:'center', marginTop: 60}}>
                     <Input
-                        placeholder='Touil Safa'
+                        placeholder={client.firstName}
                         leftIcon={
                             <Icon
                             name='user-o'
@@ -60,10 +86,26 @@ const editPorfileScreen  = ({navigation}) => {
                             />
                         }
                         style = {styles.input} 
-                        value={email}
+                        value={firstName}
+                        onChangeText={setFisrtName}
                     />
+
+                    <Input
+                        placeholder={client.lastName}
+                        leftIcon={
+                            <Icon
+                            name='user-o'
+                            size={18}
+                            color='black'
+                            />
+                        }
+                        style = {styles.input} 
+                        value={lastName}
+                        onChangeText= {setLastName}
+                    />
+                    
                      <Input
-                        placeholder='Montrel, Canada'
+                        placeholder={client.adresse}
                         leftIcon={
                             <Icon
                             name='address-book-o'
@@ -71,23 +113,12 @@ const editPorfileScreen  = ({navigation}) => {
                             color='black'
                             />
                         }
-                        style = {styles.input} 
-                        value={email}
+                        style = {styles.input}
+                        value={adresse}
+                        onChangeText= {setAdresse}
                     />
-                     <Input
-                        placeholder='Femme'
-                        leftIcon={
-                            <Icon
-                            name='venus-mars'
-                            size={18}
-                            color='black'
-                            />
-                        }
-                        style = {styles.input} 
-                        value={email}
-                    />
-                     <Input
-                        placeholder='20/07/1998'
+                    <Input
+                        placeholder={client.birthday}
                         leftIcon={
                             <Icon
                             name='calendar'
@@ -96,31 +127,35 @@ const editPorfileScreen  = ({navigation}) => {
                             />
                         }
                         style = {styles.input} 
-                        value={email}
+                        value={birthday}
+                        onChangeText={setBirthday}
                     />
+                    
+                     
+                </View>  
 
-                   
-                   {/* <Text style ={styles.txt}> Security</Text>
+                {/*----------------------------------------------------------------- */}
 
-                    <Input
-                        placeholder='+1 29534057'
-                        leftIcon={
-                            <Icon
-                            name='mobile'
-                            size={24}
-                            color='black'
-                            />
-                        }
-                        style = {styles.input} 
-                        value={email}
-                    />
-                    */}
+           </View>
 
+            <View style = {{ flex: 1, justifyContent:'flex-end', flexDirection:'column'}}>
+              <View style = {styles.viewBar}>
 
-                </View>    
-           
+                <TouchableOpacity style={styles.touchable} onPress={() => navigation.navigate('profile')}> 
+                        <Text style= {{fontSize: 14, color: "#818181" , fontWeight: 'bold', marginTop: 8, marginLeft:10}}>Cancel</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.touchable}> 
+                        <Text style= {{fontSize: 14, color: "#818181" , fontWeight:'400', marginTop: 8, marginLeft:10}}>Edit profile</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.touchable} onPress={(e) => handleSubmit(e)}> 
+                        <Text style= {{fontSize: 14, color: "#818181" , fontWeight: 'bold', marginTop: 8, marginLeft:10}}>Save</Text>
+                </TouchableOpacity>
+
+              </View>
             </View>
-           </ScrollView>
+           
         </View>
         
     );
@@ -134,9 +169,25 @@ editPorfileScreen.navigationOptions = () => {
 };
 
 const styles = StyleSheet.create({
-
+    container: {
+        height:'100%', 
+        backgroundColor: '#F3F3F3', 
+        flex: 1, 
+        flexDirection:'column' ,
+        
+      },
     txt: {        
         marginTop:15
+    },
+
+    viewBar :{
+        flexDirection: 'row', 
+        justifyContent:'space-around',
+        height: 40,
+        backgroundColor:'#F3F3F3',
+        shadowOpacity:500,
+        elevation:15,
+      
     },
 
     send:{

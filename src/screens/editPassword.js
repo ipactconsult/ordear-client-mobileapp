@@ -1,16 +1,14 @@
 import React, { useState } from "react";
-import { Input } from 'react-native-elements';
 import { ScrollView, View,Text,Image, StyleSheet ,Button, StatusBar, TouchableOpacity, TextInput} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import image from '../../assets/images/reset.png'
 import  {useForm, Controller} from 'react-hook-form';
 import axios from 'axios';
 import ipAdress from '../constants/cte'
 
-const ResetPasswordScreen = ({navigation}) => {
+const EditPasswordScreen = ({navigation}) => {
 
   const [password, setPassword]= useState('');
-  const [confirmPassword, setConfirmPassword]= useState('');
+  const [confirmPpassword, setConfirmPassword]= useState('');
 
   /*------------------------- liaison avec back ------------------------------------ */
     const handleSubmit = (e) => {
@@ -22,7 +20,7 @@ const ResetPasswordScreen = ({navigation}) => {
       
       const configuration = {
       method: "put",
-      url: ip.ipAdress+"/modifierPass",
+      url: ip.ipAdress+"/editPassword",
       data: {
         password,
       },
@@ -30,10 +28,13 @@ const ResetPasswordScreen = ({navigation}) => {
 
       axios(configuration)
       .then((result) => {console.log("Password changed");           
-        navigation.navigate('Login')})
+        navigation.navigate('profile')})
       .catch((error) => {console.log("Password has not changed"); }) 
       
     }
+
+    
+    
 /*------------------------------------------------------------------------------*/
 
 
@@ -53,7 +54,7 @@ const ResetPasswordScreen = ({navigation}) => {
 
             {/* ----------------------- Forgot Password Data ----------------------------- */}
          
-          <Text style = {{fontWeight: '500', fontSize: 25, marginLeft :15, marginTop: 15}}> Create your new password !</Text>            
+          <Text style = {{fontWeight: '500', fontSize: 25, marginLeft :15, marginTop: 15}}> Edit your password!</Text>            
           <Text style = {styles.txt}> Enter your new password</Text>
           <View style = {styles.formContainer}>
             <Icon name='lock' size={22} color="#818181"/>
@@ -78,8 +79,8 @@ const ResetPasswordScreen = ({navigation}) => {
               style = {styles.input} 
               placeholder= "Confirm your password"
               placeholderTextColor="#818181"
-              name={confirmPassword}
-              value={confirmPassword}
+              name={confirmPpassword}
+              value={confirmPpassword}
               onChangeText = {setConfirmPassword}
             />
                         
@@ -88,19 +89,16 @@ const ResetPasswordScreen = ({navigation}) => {
            <View style = {{ flex: 1, justifyContent:'flex-end', flexDirection:'column'}}>
               <View style = {{flexDirection: 'row', justifyContent:'space-around'}}>
 
-                  <TouchableOpacity style={styles.touchable} onPress={() => navigation.navigate('Login')}> 
-                    <Text style= {{fontSize: 14, color: "#818181" , fontWeight: 'bold', marginTop: 15, marginLeft:10}}>Back to sign In</Text>
+                  <TouchableOpacity style={styles.touchable} onPress={() => navigation.navigate('profile')}> 
+                    <Text style= {{fontSize: 14, color: "#818181" , fontWeight: 'bold', marginTop: 15, marginLeft:10}}>Back to profile</Text>
                   </TouchableOpacity>
 
-                  <TouchableOpacity style={styles.send} onPress={(e) => handleSubmit(e)}  >
+                  <TouchableOpacity style={styles.send} onPress={(e) => handleSubmit(e)} disabled  = {password? false : true }   >
                        <Text style={styles.sendTxt} >Send</Text>
                   </TouchableOpacity>
               </View>
            </View>
             
-                
-          
-
              
           </View>
                  
@@ -109,7 +107,7 @@ const ResetPasswordScreen = ({navigation}) => {
 )
 };
 
-ResetPasswordScreen.navigationOptions = () => {
+EditPasswordScreen.navigationOptions = () => {
     return {
       headerShown: null,    
     };
@@ -177,4 +175,4 @@ ResetPasswordScreen.navigationOptions = () => {
      }
   });
   
-export default ResetPasswordScreen;
+export default EditPasswordScreen;
